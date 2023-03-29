@@ -4,6 +4,8 @@ import AppContext from './AppContext';
 
 export default function AppProvider({ children }) {
   const [fetchPlanets, setFetchPlanets] = useState([]);
+  const [nameFilter, setNameFilter] = useState([]);
+  const [filterSearch, setFilterSearch] = useState('');
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -20,8 +22,22 @@ export default function AppProvider({ children }) {
     requestAPI();
   }, []);
 
+  useEffect(() => {
+    const filteredArray = fetchPlanets.filter((obj) => obj.name.toLowerCase()
+      .includes(filterSearch.toLowerCase()));
+
+    setNameFilter(filteredArray);
+  }, [nameFilter, fetchPlanets, filterSearch]); // https://github.com/facebook/react/issues/14920
+
   return (
-    <AppContext.Provider value={ { fetchPlanets, setFetchPlanets } }>
+    <AppContext.Provider
+      value={ {
+        fetchPlanets,
+        setFetchPlanets,
+        filterSearch,
+        setFilterSearch,
+        nameFilter } }
+    >
       { children }
     </AppContext.Provider>
   );

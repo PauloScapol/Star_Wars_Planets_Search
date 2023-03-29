@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AppContext from '../context/AppContext';
 
 export default function Table() {
-  const { fetchPlanets } = useContext(AppContext);
+  const { fetchPlanets, nameFilter } = useContext(AppContext);
 
   return (
     <table>
@@ -24,7 +24,25 @@ export default function Table() {
         </tr>
       </thead>
       <tbody>
-        { fetchPlanets.map((obj) => (
+        { nameFilter.length > 0 ? nameFilter.map((obj) => (
+          <tr key={ obj.name }>
+            <td>{ obj.name }</td>
+            <td>{ obj.rotation_period }</td>
+            <td>{ obj.orbital_period }</td>
+            <td>{ obj.diameter }</td>
+            <td>{ obj.climate }</td>
+            <td>{ obj.gravity }</td>
+            <td>{ obj.terrain }</td>
+            <td>{ obj.surface_water }</td>
+            <td>{ obj.population }</td>
+            {/* Number(obj.population).toLocaleString('en-US') */}
+            {/* https://stackoverflow.com/questions/52795097/json-numbers-formatted-with-commas */}
+            <td>{ obj.films }</td>
+            <td>{ obj.created }</td>
+            <td>{ obj.edited }</td>
+            <td>{ obj.url }</td>
+          </tr>
+        )) : fetchPlanets.map((obj) => (
           <tr key={ obj.name }>
             <td>{ obj.name }</td>
             <td>{ obj.rotation_period }</td>
