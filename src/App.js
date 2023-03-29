@@ -1,10 +1,10 @@
-import React from 'react';
-import './App.css';
+import Table from './components/Table';
+import AppProvider from './context/AppProvider';
 
-function App() {
+export default function App() {
   return (
-    <span>Começando o projeto!</span>
+    <AppProvider>
+      <Table />
+    </AppProvider>
   );
 }
-
-export default App;
