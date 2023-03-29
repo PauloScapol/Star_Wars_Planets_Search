@@ -6,6 +6,10 @@ export default function AppProvider({ children }) {
   const [fetchPlanets, setFetchPlanets] = useState([]);
   const [nameFilter, setNameFilter] = useState([]);
   const [filterSearch, setFilterSearch] = useState('');
+  const [columnFilter, setColumnFilter] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [valueFilter, setValueFilter] = useState('0');
+  const [buttonClick, setButtonClick] = useState(false);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -23,11 +27,25 @@ export default function AppProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const filteredArray = fetchPlanets.filter((obj) => obj.name.toLowerCase()
-      .includes(filterSearch.toLowerCase()));
+    const filteredArray = fetchPlanets.filter((obj) => {
+      const filterName = obj.name.toLowerCase()
+        .includes(filterSearch.toLowerCase());
 
+      let filterColumn = true;
+
+      if (buttonClick) {
+        if (comparison === 'maior que') {
+          filterColumn = parseFloat(obj[columnFilter]) > parseFloat(valueFilter);
+        } else if (comparison === 'menor que') {
+          filterColumn = parseFloat(obj[columnFilter]) < parseFloat(valueFilter);
+        } else if (comparison === 'igual a') {
+          filterColumn = obj[columnFilter] === valueFilter;
+        }
+      }
+      return filterName && filterColumn;
+    });
     setNameFilter(filteredArray);
-  }, [nameFilter, fetchPlanets, filterSearch]); // https://github.com/facebook/react/issues/14920
+  }, [filterSearch, buttonClick, fetchPlanets, comparison, columnFilter, valueFilter]);
 
   return (
     <AppContext.Provider
@@ -36,7 +54,13 @@ export default function AppProvider({ children }) {
         setFetchPlanets,
         filterSearch,
         setFilterSearch,
-        nameFilter } }
+        nameFilter,
+        setComparison,
+        setColumnFilter,
+        valueFilter,
+        setValueFilter,
+        buttonClick,
+        setButtonClick } }
     >
       { children }
     </AppContext.Provider>
@@ -44,5 +68,5 @@ export default function AppProvider({ children }) {
 }
 
 AppProvider.propTypes = {
-  children: PropTypes.shape().isRequired,
+  children: PropTypes.arrayOf(PropTypes.shape).isRequired,
 };
