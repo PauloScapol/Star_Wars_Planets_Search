@@ -3,37 +3,31 @@ import AppContext from '../context/AppContext';
 // import useInput from '../hooks/useInput';
 
 export default function Filters() {
-  const {
-    filterSearch, setFilterSearch,
-    setComparison,
-    setColumnFilter,
-    valueFilter, setValueFilter,
-    buttonClick, setButtonClick,
-  } = useContext(AppContext);
-
   // const filterSearch = useInput('');
   // const comparison = useInput('');
   // const columnFilter = useInput('');
   // const valueFilter = useInput('');
-
-  function handleFilterSearch(e) {
-    setFilterSearch(e.target.value);
-  }
-
-  function handleComparison(e) {
-    setComparison(e.target.value);
-  }
-
-  function handleColumnFilter(e) {
-    setColumnFilter(e.target.value);
-  }
-
-  function handleValueFilter(e) {
-    setValueFilter(e.target.value);
-  }
+  const {
+    filterSearch, setFilterSearch,
+    columnFilter, setColumnFilter,
+    comparison, setComparison,
+    valueFilter, setValueFilter,
+    buttonClick, setButtonClick,
+    newFilteredArray, setNewFilteredArray,
+    setFilteredStatus,
+  } = useContext(AppContext);
 
   function handleClick() {
     setButtonClick(!buttonClick);
+    setFilteredStatus(true);
+
+    setNewFilteredArray((prevList) => [...prevList, {
+      column: columnFilter,
+      operator: comparison,
+      number: valueFilter,
+    }]);
+
+    setButtonClick(false);
   }
 
   return (
@@ -42,10 +36,13 @@ export default function Filters() {
         data-testid="name-filter"
         type="text"
         value={ filterSearch }
-        onChange={ handleFilterSearch }
+        onChange={ (e) => setFilterSearch(e.target.value) }
       />
 
-      <select data-testid="column-filter" onChange={ handleColumnFilter }>
+      <select
+        data-testid="column-filter"
+        onChange={ (e) => setColumnFilter(e.target.value) }
+      >
         <option value="population">population</option>
         <option value="orbital_period">orbital_period</option>
         <option value="diameter">diameter</option>
@@ -53,7 +50,10 @@ export default function Filters() {
         <option value="surface_water">surface_water</option>
       </select>
 
-      <select data-testid="comparison-filter" onChange={ handleComparison }>
+      <select
+        data-testid="comparison-filter"
+        onChange={ (e) => setComparison(e.target.value) }
+      >
         <option value="maior que">maior que</option>
         <option value="menor que">menor que</option>
         <option value="igual a">igual a</option>
@@ -63,12 +63,23 @@ export default function Filters() {
         data-testid="value-filter"
         type="number"
         value={ valueFilter }
-        onChange={ handleValueFilter }
+        onChange={ (e) => setValueFilter(e.target.value) }
       />
 
-      <button data-testid="button-filter" type="submit" onClick={ handleClick }>
+      <button
+        data-testid="button-filter"
+        type="submit"
+        onClick={ handleClick }
+      >
         FILTRAR
       </button>
+
+      {newFilteredArray.length > 0 && newFilteredArray
+        .map((filter) => (
+          <li key={ filter.number }>
+            {`${filter.column} ${filter.operator} ${filter.number}`}
+          </li>
+        ))}
     </>
   );
 }

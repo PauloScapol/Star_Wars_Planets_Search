@@ -10,6 +10,8 @@ export default function AppProvider({ children }) {
   const [comparison, setComparison] = useState('maior que');
   const [valueFilter, setValueFilter] = useState('0');
   const [buttonClick, setButtonClick] = useState(false);
+  const [filteredStatus, setFilteredStatus] = useState(false);
+  const [newFilteredArray, setNewFilteredArray] = useState([]);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -21,46 +23,62 @@ export default function AppProvider({ children }) {
       });
 
       setFetchPlanets(noResidents);
+      setNameFilter(noResidents);
     };
 
     requestAPI();
   }, []);
 
   useEffect(() => {
-    const filteredArray = fetchPlanets.filter((obj) => {
+    const filteredArray = nameFilter.filter((obj) => {
       const filterName = obj.name.toLowerCase()
         .includes(filterSearch.toLowerCase());
 
       let filterColumn = true;
 
-      if (buttonClick) {
-        if (comparison === 'maior que') {
-          filterColumn = parseFloat(obj[columnFilter]) > parseFloat(valueFilter);
-        } else if (comparison === 'menor que') {
-          filterColumn = parseFloat(obj[columnFilter]) < parseFloat(valueFilter);
-        } else if (comparison === 'igual a') {
-          filterColumn = obj[columnFilter] === valueFilter;
-        }
+      if (filteredStatus) {
+        newFilteredArray.map(({ column, operator, number }) => {
+          if (operator === 'maior que') {
+            filterColumn = parseFloat(obj[column]) > parseFloat(number);
+          } else if (operator === 'menor que') {
+            filterColumn = parseFloat(obj[column]) < parseFloat(number);
+          } else if (operator === 'igual a') {
+            filterColumn = obj[column] === number;
+          }
+          return filterColumn;
+        });
       }
+
       return filterName && filterColumn;
     });
-    setNameFilter(filteredArray);
-  }, [filterSearch, buttonClick, fetchPlanets, comparison, columnFilter, valueFilter]);
+
+    if (newFilteredArray.length === 0) {
+      setNameFilter(fetchPlanets.filter((obj) => obj.name.toLowerCase()
+        .includes(filterSearch.toLowerCase())));
+    } else {
+      setNameFilter(filteredArray);
+    }
+  }, [fetchPlanets, filterSearch, filteredStatus, nameFilter, newFilteredArray]);
 
   return (
     <AppContext.Provider
       value={ {
-        fetchPlanets,
-        setFetchPlanets,
         filterSearch,
         setFilterSearch,
-        nameFilter,
-        setComparison,
-        setColumnFilter,
         valueFilter,
         setValueFilter,
         buttonClick,
-        setButtonClick } }
+        setButtonClick,
+        comparison,
+        setComparison,
+        columnFilter,
+        setColumnFilter,
+        newFilteredArray,
+        setNewFilteredArray,
+        fetchPlanets,
+        nameFilter,
+        setFilteredStatus,
+      } }
     >
       { children }
     </AppContext.Provider>
