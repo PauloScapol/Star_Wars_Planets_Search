@@ -12,13 +12,13 @@ export default function Filters() {
     columnFilter, setColumnFilter,
     comparison, setComparison,
     valueFilter, setValueFilter,
-    buttonClick, setButtonClick,
     newFilteredArray, setNewFilteredArray,
-    setFilteredStatus,
+    optionsColumn, fetchPlanets,
+    filteredOptionsArray, setFilteredOptionsArray,
+    setFilteredStatus, setNameFilter,
   } = useContext(AppContext);
 
   function handleClick() {
-    setButtonClick(!buttonClick);
     setFilteredStatus(true);
 
     setNewFilteredArray((prevList) => [...prevList, {
@@ -27,7 +27,27 @@ export default function Filters() {
       number: valueFilter,
     }]);
 
-    setButtonClick(false);
+    setFilteredOptionsArray((prevList) => [...prevList, columnFilter]);
+  }
+
+  // Deleta só 1 filtro
+  function handleDelete(e) {
+    setNameFilter(fetchPlanets);
+
+    setNewFilteredArray(newFilteredArray
+      .filter((obj) => obj.column !== e.target.value));
+
+    const updatedOptions = filteredOptionsArray
+      .filter((options) => options !== e.target.value);
+
+    setFilteredOptionsArray(updatedOptions);
+  }
+
+  // Reseta os filtros
+  function handleReset() {
+    setNewFilteredArray([]);
+    setFilteredOptionsArray([]);
+    setColumnFilter('population');
   }
 
   return (
@@ -43,11 +63,18 @@ export default function Filters() {
         data-testid="column-filter"
         onChange={ (e) => setColumnFilter(e.target.value) }
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        { filteredOptionsArray.length > 0 ? optionsColumn
+          .map((opt) => (!filteredOptionsArray.includes(opt) && (
+            <option key={ opt } value={ opt }>
+              {opt}
+            </option>)))
+          : optionsColumn.map((option) => (
+            <option
+              key={ option }
+              value={ option }
+            >
+              {option}
+            </option>))}
       </select>
 
       <select
@@ -74,10 +101,26 @@ export default function Filters() {
         FILTRAR
       </button>
 
+      <button
+        data-testid="button-remove-filters"
+        type="button"
+        onClick={ handleReset }
+      >
+        Remover todas filtragens
+      </button>
+
       {newFilteredArray.length > 0 && newFilteredArray
         .map((filter) => (
-          <li key={ filter.number }>
+          <li data-testid="filter" key={ filter.column }>
             {`${filter.column} ${filter.operator} ${filter.number}`}
+
+            <button
+              type="button"
+              value={ filter.column }
+              onClick={ handleDelete }
+            >
+              X
+            </button>
           </li>
         ))}
     </>

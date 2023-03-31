@@ -9,9 +9,11 @@ export default function AppProvider({ children }) {
   const [columnFilter, setColumnFilter] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [valueFilter, setValueFilter] = useState('0');
-  const [buttonClick, setButtonClick] = useState(false);
   const [filteredStatus, setFilteredStatus] = useState(false);
   const [newFilteredArray, setNewFilteredArray] = useState([]);
+  const [filteredOptionsArray, setFilteredOptionsArray] = useState([]);
+  const [optionsColumn, setOptionsColumn] = useState(['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water']);
 
   useEffect(() => {
     const requestAPI = async () => {
@@ -58,7 +60,17 @@ export default function AppProvider({ children }) {
     } else {
       setNameFilter(filteredArray);
     }
-  }, [fetchPlanets, filterSearch, filteredStatus, nameFilter, newFilteredArray]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterSearch, filteredStatus, newFilteredArray]);
+
+  useEffect(() => {
+    if (filteredOptionsArray.length > 0) {
+      const optionsArray = optionsColumn
+        .filter((opt) => (!filteredOptionsArray.includes(opt) && opt));
+      setColumnFilter(optionsArray[0]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredOptionsArray, newFilteredArray]);
 
   return (
     <AppContext.Provider
@@ -67,16 +79,19 @@ export default function AppProvider({ children }) {
         setFilterSearch,
         valueFilter,
         setValueFilter,
-        buttonClick,
-        setButtonClick,
         comparison,
         setComparison,
         columnFilter,
         setColumnFilter,
         newFilteredArray,
         setNewFilteredArray,
-        fetchPlanets,
+        optionsColumn,
+        setOptionsColumn,
+        filteredOptionsArray,
+        setFilteredOptionsArray,
         nameFilter,
+        setNameFilter,
+        fetchPlanets,
         setFilteredStatus,
       } }
     >
