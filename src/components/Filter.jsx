@@ -1,12 +1,8 @@
 import React, { useContext } from 'react';
 import AppContext from '../context/AppContext';
-// import useInput from '../hooks/useInput';
+import '../styles/Filter.css';
 
 export default function Filters() {
-  // const filterSearch = useInput('');
-  // const comparison = useInput('');
-  // const columnFilter = useInput('');
-  // const valueFilter = useInput('');
   const {
     filterSearch, setFilterSearch,
     columnFilter, setColumnFilter,
