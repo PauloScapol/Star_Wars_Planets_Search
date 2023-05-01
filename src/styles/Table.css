@@ -1,0 +1,29 @@
+table {
+  border-collapse: collapse;
+  width: 300%;
+}
+
+thead {
+  height: 50px;
+}
+
+th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: lightgray;
+  font-weight: 700;
+}
+
+tr {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+tr:nth-child( even ) {
+  background-color: lightgray;
+}
